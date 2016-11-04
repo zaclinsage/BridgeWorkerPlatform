@@ -6,7 +6,7 @@ import org.sagebionetworks.bridge.json.DefaultObjectMapper;
 import org.sagebionetworks.bridge.reporter.worker.BridgeReporterProcessor;
 import org.sagebionetworks.bridge.sqs.PollSqsCallback;
 import org.sagebionetworks.bridge.sqs.PollSqsWorkerBadRequestException;
-import org.sagebionetworks.bridge.udd.worker.BridgeUddProcessor;
+import org.sagebionetworks.bridge.udd.worker.BridgeUddSqsCallback;
 import org.sagebionetworks.bridge.workerPlatform.request.ServiceType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,7 +23,7 @@ public class BridgeWorkerPlatformSqsCallback implements PollSqsCallback {
 
     private BridgeReporterProcessor bridgeReporterProcessor;
     private BridgeExporterProcessor bridgeExporterProcessor;
-    private BridgeUddProcessor bridgeUddProcessor;
+    private BridgeUddSqsCallback bridgeUddProcessor;
 
     @Autowired
     public void setBridgeReporterProcessor(BridgeReporterProcessor bridgeReporterProcessor) {
@@ -31,7 +31,7 @@ public class BridgeWorkerPlatformSqsCallback implements PollSqsCallback {
     }
 
     @Autowired
-    public void setBridgeUddProcessor(BridgeUddProcessor bridgeUddProcessor) {
+    public void setBridgeUddProcessor(BridgeUddSqsCallback bridgeUddProcessor) {
         this.bridgeUddProcessor = bridgeUddProcessor;
     }
 
@@ -83,7 +83,7 @@ public class BridgeWorkerPlatformSqsCallback implements PollSqsCallback {
                 public void run() {
                     LOG.info("Thread: " + this.getName() + " running");
                     try {
-                        bridgeUddProcessor.process(body);
+                        bridgeUddProcessor.callback(body);
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
