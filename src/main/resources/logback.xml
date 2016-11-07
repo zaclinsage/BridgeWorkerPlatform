@@ -12,5 +12,7 @@
 
     <logger name="org.sagebionetworks.bridge.workerPlatform" level="INFO" />
     <logger name="org.sagebionetworks.bridge.reporter" level="INFO" />
+    <logger name="org.sagebionetworks.bridge.exporter" level="INFO" />
+    <logger name="org.sagebionetworks.bridge.udd" level="INFO" />
     <logger name="org.sagebionetworks.bridge.heartbeat" level="INFO" />
 </configuration>

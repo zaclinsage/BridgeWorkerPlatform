@@ -6,7 +6,7 @@ import org.sagebionetworks.bridge.json.DefaultObjectMapper;
 import org.sagebionetworks.bridge.reporter.request.ReportScheduleName;
 import org.sagebionetworks.bridge.reporter.worker.BridgeReporterProcessor;
 import org.sagebionetworks.bridge.sqs.PollSqsWorkerBadRequestException;
-import org.sagebionetworks.bridge.udd.worker.BridgeUddProcessor;
+import org.sagebionetworks.bridge.udd.worker.BridgeUddSqsCallback;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
@@ -23,7 +23,7 @@ public class BridgeWorkerPlatformSqsCallbackTest {
     private static final BridgeWorkerPlatformRequest MOCK_WORKER_REQUEST = mock(BridgeWorkerPlatformRequest.class);
     private static final BridgeReporterProcessor MOCK_REPORTER_PROCESSOR = mock(BridgeReporterProcessor.class);
     private static final BridgeExporterProcessor MOCK_EXPORTER_PROCESSOR = mock(BridgeExporterProcessor.class);
-    private static final BridgeUddProcessor MOCK_UDD_PROCESSOR = mock(BridgeUddProcessor.class);
+    private static final BridgeUddSqsCallback MOCK_UDD_PROCESSOR = mock(BridgeUddSqsCallback.class);
 
     // simple strings for test
     private static final String TEST_SCHEDULER = "test-scheduler";
@@ -92,7 +92,7 @@ public class BridgeWorkerPlatformSqsCallbackTest {
         // set up callback
         callback = new BridgeWorkerPlatformSqsCallback();
         callback.setBridgeReporterProcessor(MOCK_REPORTER_PROCESSOR);
-        callback.setBridgeExporterProcessor(MOCK_EXPORTER_PROCESSOR);
+//        callback.setBridgeExporterProcessor(MOCK_EXPORTER_PROCESSOR);
         callback.setBridgeUddProcessor(MOCK_UDD_PROCESSOR);
     }
 
@@ -104,17 +104,10 @@ public class BridgeWorkerPlatformSqsCallbackTest {
     }
 
     @Test
-    public void testBridgeExporter() throws Exception {
-        callback.callback(REQUEST_JSON_EXPORTER_MSG);
-
-        verify(MOCK_EXPORTER_PROCESSOR).process(eq(EXPORTER_REQUEST_JSON));
-    }
-
-    @Test
     public void testBridgeUdd() throws Exception {
         callback.callback(REQUEST_JSON_UDD_MSG);
 
-        verify(MOCK_UDD_PROCESSOR).process(eq(UDD_REQUEST_JSON));
+        verify(MOCK_UDD_PROCESSOR).callback(eq(UDD_REQUEST_JSON));
     }
 
     @Test(expectedExceptions = PollSqsWorkerBadRequestException.class)

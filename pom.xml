@@ -138,16 +138,6 @@
 
     <repositories>
         <repository>
-            <id>org-sagebridge-repo-maven-releases-local</id>
-            <name>org-sagebridge-repo-maven-releases</name>
-            <url>file:///${project.basedir}/../Bridge-Exporter/target</url>
-        </repository>
-        <repository>
-            <id>org-sagebridge-repo-maven-releases-localUDD</id>
-            <name>org-sagebridge-repo-maven-releases</name>
-            <url>file:///${project.basedir}/../BridgeUserDataDownloadService/target</url>
-        </repository>
-        <repository>
             <id>org-sagebridge-repo-maven-releases-s3</id>
             <name>org-sagebridge-repo-maven-releases</name>
             <url>s3://org-sagebridge-repo-maven-releases</url>
