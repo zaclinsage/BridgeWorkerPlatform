@@ -10,7 +10,11 @@ import org.sagebionetworks.bridge.udd.worker.BridgeUddProcessor;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
+import javax.annotation.Resource;
 import java.io.IOException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
@@ -24,6 +28,7 @@ public class BridgeWorkerPlatformSqsCallbackTest {
     private static final BridgeReporterProcessor MOCK_REPORTER_PROCESSOR = mock(BridgeReporterProcessor.class);
     private static final BridgeExporterProcessor MOCK_EXPORTER_PROCESSOR = mock(BridgeExporterProcessor.class);
     private static final BridgeUddProcessor MOCK_UDD_PROCESSOR = mock(BridgeUddProcessor.class);
+    private static final ExecutorService executor = Executors.newFixedThreadPool(10);
 
     // simple strings for test
     private static final String TEST_SCHEDULER = "test-scheduler";
@@ -94,19 +99,20 @@ public class BridgeWorkerPlatformSqsCallbackTest {
         callback.setBridgeReporterProcessor(MOCK_REPORTER_PROCESSOR);
 //        callback.setBridgeExporterProcessor(MOCK_EXPORTER_PROCESSOR);
         callback.setBridgeUddProcessor(MOCK_UDD_PROCESSOR);
+        callback.setExecutor(executor);
     }
 
     @Test
     public void testBridgeReporter() throws Exception {
         callback.callback(REQUEST_JSON_MSG);
-
+        TimeUnit.SECONDS.sleep(1);
         verify(MOCK_REPORTER_PROCESSOR).process(eq(REPORTER_REQUEST_JSON));
     }
 
     @Test
     public void testBridgeUdd() throws Exception {
         callback.callback(REQUEST_JSON_UDD_MSG);
-
+        TimeUnit.SECONDS.sleep(1);
         verify(MOCK_UDD_PROCESSOR).process(eq(UDD_REQUEST_JSON));
     }
 

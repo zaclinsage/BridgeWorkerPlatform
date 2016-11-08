@@ -103,7 +103,7 @@ public class SpringConfig {
     }
 
     @Bean(name = "platformExecutorService")
-    public ExecutorService workerExecutorService() {
+    public ExecutorService platformExecutorService() {
         return Executors.newFixedThreadPool(bridgeConfig().getInt("threadpool.worker.count"));
     }
 }
