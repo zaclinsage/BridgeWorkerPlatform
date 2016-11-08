@@ -12,7 +12,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import javax.annotation.Resource;
 import java.io.IOException;
+import java.util.concurrent.ExecutorService;
 
 /**
  * SQS callback. Called by the PollSqsWorker. This handles a reporting request.
@@ -21,22 +24,30 @@ import java.io.IOException;
 public class BridgeWorkerPlatformSqsCallback implements PollSqsCallback {
     private static final Logger LOG = LoggerFactory.getLogger(BridgeWorkerPlatformSqsCallback.class);
 
+    private ExecutorService executor;
+
     private BridgeReporterProcessor bridgeReporterProcessor;
     private BridgeExporterProcessor bridgeExporterProcessor;
     private BridgeUddProcessor bridgeUddProcessor;
 
+    /** Executor that runs our export workers. */
+    @Resource(name = "platformExecutorService")
+    public final void setExecutor(ExecutorService executor) {
+        this.executor = executor;
+    }
+
     @Autowired
-    public void setBridgeReporterProcessor(BridgeReporterProcessor bridgeReporterProcessor) {
+    public final void setBridgeReporterProcessor(BridgeReporterProcessor bridgeReporterProcessor) {
         this.bridgeReporterProcessor = bridgeReporterProcessor;
     }
 
     @Autowired
-    public void setBridgeUddProcessor(BridgeUddProcessor bridgeUddProcessor) {
+    public final void setBridgeUddProcessor(BridgeUddProcessor bridgeUddProcessor) {
         this.bridgeUddProcessor = bridgeUddProcessor;
     }
 
     @Autowired
-    public void setBridgeExporterProcessor(BridgeExporterProcessor bridgeExporterProcessor) {
+    public final void setBridgeExporterProcessor(BridgeExporterProcessor bridgeExporterProcessor) {
         this.bridgeExporterProcessor = bridgeExporterProcessor;
     }
 
@@ -53,44 +64,21 @@ public class BridgeWorkerPlatformSqsCallback implements PollSqsCallback {
         ServiceType service = request.getService();
         JsonNode body = request.getBody();
 
-        LOG.info("Received request for hash[service]=" + service.getType() + ", body=" + body.toString());
+        LOG.info("Received request for hash[service]=" + service.getType());
 
-        // main block to assign thread to service processor
-        if (service == ServiceType.REPORTER) {
-            new Thread("Reporter Thread") {
-                public void run() {
-                    LOG.info("Thread: " + this.getName() + " running");
-                    try {
-                        bridgeReporterProcessor.process(body);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
+        executor.execute(() -> {
+            // main block to assign thread to service processor
+            try {
+                if (service == ServiceType.REPORTER) {
+                    bridgeReporterProcessor.process(body);
+                } else if (service == ServiceType.EXPORTER) {
+                    bridgeExporterProcessor.process(body);
+                } else if (service == ServiceType.UDD) {
+                    bridgeUddProcessor.process(body);
                 }
-            }.start();
-        } else if (service == ServiceType.EXPORTER) {
-            new Thread("Reporter Thread") {
-                public void run() {
-                    LOG.info("Thread: " + this.getName() + " running");
-                    try {
-                        bridgeExporterProcessor.process(body);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }
-            }.start();
-        } else if (service == ServiceType.UDD) {
-            new Thread("UDD Thread") {
-                public void run() {
-                    LOG.info("Thread: " + this.getName() + " running");
-                    try {
-                        bridgeUddProcessor.process(body);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }
-            }.start();
-        } else {
-            throw new PollSqsWorkerBadRequestException("Invalid service type: " + service.getType());
-        }
+            } catch (Throwable e) {
+                LOG.error(e.getStackTrace().toString());
+            }
+        });
     }
 }
