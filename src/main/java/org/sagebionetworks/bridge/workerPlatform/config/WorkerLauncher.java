@@ -20,7 +20,7 @@ public class WorkerLauncher implements CommandLineRunner {
     private static final Logger LOG = LoggerFactory.getLogger(WorkerLauncher.class);
 
     private HeartbeatLogger heartbeatLogger;
-    private List<PollSqsWorker> pollSqsWorkers;
+    private PollSqsWorker pollSqsWorkers;
 
     @Autowired
     public final void setHeartbeatLogger(HeartbeatLogger heartbeatLogger) {
@@ -28,7 +28,7 @@ public class WorkerLauncher implements CommandLineRunner {
     }
 
     @Autowired
-    public final void setPollSqsWorkers(List<PollSqsWorker> pollSqsWorkers) {
+    public final void setPollSqsWorkers(PollSqsWorker pollSqsWorkers) {
         this.pollSqsWorkers = pollSqsWorkers;
     }
 
@@ -40,13 +40,10 @@ public class WorkerLauncher implements CommandLineRunner {
      */
     @Override
     public void run(String... args) {
-        LOG.info("Starting heartbeat...");
+        LOG.info("Worker Platform Starting heartbeat...");
         new Thread(heartbeatLogger).start();
 
-        LOG.info("Starting poll SQS workers...");
-        for (PollSqsWorker pollSqsWorker : pollSqsWorkers) {
-            LOG.info("Starting poll SQS worker");
-            new Thread(pollSqsWorker).start();
-        }
+        LOG.info("Worker Platform Starting poll SQS worker...");
+        new Thread(pollSqsWorkers).start();
     }
 }

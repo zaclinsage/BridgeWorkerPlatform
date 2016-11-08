@@ -9,8 +9,8 @@ import org.sagebionetworks.bridge.workerPlatform.request.ServiceType;
 @JsonDeserialize(builder = BridgeWorkerPlatformRequest.Builder.class)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class BridgeWorkerPlatformRequest {
-    private ServiceType service;
-    private JsonNode body;
+    private final ServiceType service;
+    private final JsonNode body;
 
     public BridgeWorkerPlatformRequest(ServiceType service, JsonNode body) {
         this.service = service;

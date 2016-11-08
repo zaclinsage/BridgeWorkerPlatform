@@ -25,6 +25,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Properties;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 // These configs get credentials from the default credential chain. For developer desktops, this is ~/.aws/credentials.
 // For EC2 instances, this happens transparently.
@@ -98,5 +100,10 @@ public class SpringConfig {
         sqsWorker.setSleepTimeMillis(config.getInt("workerPlatform.request.sqs.sleep.time.millis"));
         sqsWorker.setSqsHelper(sqsHelper());
         return sqsWorker;
+    }
+
+    @Bean(name = "platformExecutorService")
+    public ExecutorService workerExecutorService() {
+        return Executors.newFixedThreadPool(bridgeConfig().getInt("threadpool.worker.count"));
     }
 }
