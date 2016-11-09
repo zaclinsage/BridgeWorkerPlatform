@@ -38,7 +38,7 @@ public class BridgeWorkerPlatformRequestTest {
     public void jsonSerialization() throws Exception {
         // start with JSON
         String jsonText = "{\n" +
-                "   \"service\":\"Bridge-Reporter\",\n" +
+                "   \"service\":\"REPORTER\",\n" +
                 "   \"body\":" + "{\n" +
                 "       \"scheduler\":\"test-scheduler\",\n" +
                 "       \"scheduleType\":\"DAILY\",\n" +

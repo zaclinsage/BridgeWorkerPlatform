@@ -64,7 +64,7 @@ public class BridgeWorkerPlatformSqsCallback implements PollSqsCallback {
         ServiceType service = request.getService();
         JsonNode body = request.getBody();
 
-        LOG.info("Received request for hash[service]=" + service.getType());
+        LOG.info("Received request for hash[service]=" + service.name());
 
         executor.execute(() -> {
             // main block to assign thread to service processor
@@ -77,7 +77,7 @@ public class BridgeWorkerPlatformSqsCallback implements PollSqsCallback {
                     bridgeUddProcessor.process(body);
                 }
             } catch (Throwable e) {
-                LOG.error(e.getStackTrace().toString());
+                LOG.error("Thread Error Occurs: ", e);
             }
         });
     }
