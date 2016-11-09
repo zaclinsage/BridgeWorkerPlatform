@@ -10,7 +10,6 @@ import org.sagebionetworks.bridge.udd.worker.BridgeUddProcessor;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import javax.annotation.Resource;
 import java.io.IOException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -37,7 +36,7 @@ public class BridgeWorkerPlatformSqsCallbackTest {
     private static final ReportScheduleName TEST_SCHEDULE_TYPE = ReportScheduleName.DAILY;
 
     private static final String REQUEST_JSON_MSG = "{\n" +
-            "   \"service\":\"Bridge-Reporter\",\n" +
+            "   \"service\":\"REPORTER\",\n" +
             "   \"body\":" + "{\n" +
             "       \"scheduler\":\"test-scheduler\",\n" +
             "       \"scheduleType\":\"DAILY\",\n" +
@@ -47,7 +46,7 @@ public class BridgeWorkerPlatformSqsCallbackTest {
             "}";
 
     private static final String REQUEST_JSON_EXPORTER_MSG = "{\n" +
-            "   \"service\":\"Bridge-Exporter\",\n" +
+            "   \"service\":\"EXPORTER\",\n" +
             "   \"body\":" + "{\n" +
             "       \"date\":\"2015-12-01\",\n" +
             "       \"tag\":\"test-tag\"\n" +
@@ -55,7 +54,7 @@ public class BridgeWorkerPlatformSqsCallbackTest {
             "}";
 
     private static final String REQUEST_JSON_UDD_MSG = "{\n" +
-            "   \"service\":\"Bridge-UDD\",\n" +
+            "   \"service\":\"UDD\",\n" +
             "   \"body\":" + "{\n" +
             "       \"studyId\":\"" + TEST_STUDY_ID +"\",\n" +
             "       \"username\":\"" + TEST_EMAIL + "\",\n" +
