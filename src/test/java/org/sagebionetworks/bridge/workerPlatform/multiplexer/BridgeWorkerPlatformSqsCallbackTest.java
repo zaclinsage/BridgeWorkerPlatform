@@ -1,7 +1,6 @@
 package org.sagebionetworks.bridge.workerPlatform.multiplexer;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import org.sagebionetworks.bridge.exporter.request.BridgeExporterProcessor;
 import org.sagebionetworks.bridge.json.DefaultObjectMapper;
 import org.sagebionetworks.bridge.reporter.request.ReportScheduleName;
 import org.sagebionetworks.bridge.reporter.worker.BridgeReporterProcessor;
@@ -25,7 +24,6 @@ public class BridgeWorkerPlatformSqsCallbackTest {
 
     private static final BridgeWorkerPlatformRequest MOCK_WORKER_REQUEST = mock(BridgeWorkerPlatformRequest.class);
     private static final BridgeReporterProcessor MOCK_REPORTER_PROCESSOR = mock(BridgeReporterProcessor.class);
-    private static final BridgeExporterProcessor MOCK_EXPORTER_PROCESSOR = mock(BridgeExporterProcessor.class);
     private static final BridgeUddProcessor MOCK_UDD_PROCESSOR = mock(BridgeUddProcessor.class);
     private static final ExecutorService executor = Executors.newFixedThreadPool(10);
 
