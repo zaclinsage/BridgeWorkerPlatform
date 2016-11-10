@@ -1,7 +1,6 @@
 package org.sagebionetworks.bridge.workerPlatform.multiplexer;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import org.sagebionetworks.bridge.exporter.request.BridgeExporterProcessor;
 import org.sagebionetworks.bridge.json.DefaultObjectMapper;
 import org.sagebionetworks.bridge.reporter.worker.BridgeReporterProcessor;
 import org.sagebionetworks.bridge.sqs.PollSqsCallback;
@@ -27,7 +26,6 @@ public class BridgeWorkerPlatformSqsCallback implements PollSqsCallback {
     private ExecutorService executor;
 
     private BridgeReporterProcessor bridgeReporterProcessor;
-    private BridgeExporterProcessor bridgeExporterProcessor;
     private BridgeUddProcessor bridgeUddProcessor;
 
     /** Executor that runs our export workers. */
@@ -44,11 +42,6 @@ public class BridgeWorkerPlatformSqsCallback implements PollSqsCallback {
     @Autowired
     public final void setBridgeUddProcessor(BridgeUddProcessor bridgeUddProcessor) {
         this.bridgeUddProcessor = bridgeUddProcessor;
-    }
-
-    @Autowired
-    public final void setBridgeExporterProcessor(BridgeExporterProcessor bridgeExporterProcessor) {
-        this.bridgeExporterProcessor = bridgeExporterProcessor;
     }
 
     /** Parses the SQS message. */
@@ -72,7 +65,7 @@ public class BridgeWorkerPlatformSqsCallback implements PollSqsCallback {
                 if (service == ServiceType.REPORTER) {
                     bridgeReporterProcessor.process(body);
                 } else if (service == ServiceType.EXPORTER) {
-                    bridgeExporterProcessor.process(body);
+                    // TODO: left exporter for later testing
                 } else if (service == ServiceType.UDD) {
                     bridgeUddProcessor.process(body);
                 }

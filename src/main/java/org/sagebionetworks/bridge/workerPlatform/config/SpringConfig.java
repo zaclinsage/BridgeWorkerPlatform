@@ -34,7 +34,6 @@ import java.util.concurrent.Executors;
 // http://docs.aws.amazon.com/AWSSdkDocsJava/latest/DeveloperGuide/java-dg-setup.html#set-up-creds for more info.
 @ComponentScan("org.sagebionetworks.bridge.workerPlatform")
 @Import({org.sagebionetworks.bridge.reporter.config.SpringConfig.class,
-        org.sagebionetworks.bridge.exporter.config.SpringConfig.class,
         org.sagebionetworks.bridge.udd.config.SpringConfig.class})
 @Configuration("GeneralConfig")
 public class SpringConfig {
