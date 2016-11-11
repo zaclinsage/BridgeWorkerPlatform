@@ -13,9 +13,9 @@ deploy:
   region: us-east-1
   app: Bridge-WorkerPlatform
   env:
-    develop: Bridge-WorkerPlatform-Dev
-    uat: Bridge-WorkerPlatform-Uat
-    prod: Bridge-WorkerPlatform-Prod
+    develop: Bridge-WorkerPlatform-dev
+    uat: Bridge-WorkerPlatform-uat
+    prod: Bridge-WorkerPlatform-prod
   bucket_name: elasticbeanstalk-us-east-1-649232250620
   zip-file: target/Bridge-WorkerPlatform-1.0.war
   on:
