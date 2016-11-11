@@ -7,7 +7,6 @@
     <groupId>org.sagebionetworks</groupId>
     <artifactId>BridgeWorkerPlatform</artifactId>
     <version>1.0</version>
-    <packaging>jar</packaging>
 
     <properties>
         <aws.version>1.10.56</aws.version>
