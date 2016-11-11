@@ -17,6 +17,6 @@ deploy:
     uat: Bridge-WorkerPlatform-uat
     prod: Bridge-WorkerPlatform-prod
   bucket_name: elasticbeanstalk-us-east-1-649232250620
-  zip-file: target/Bridge-WorkerPlatform-1.0.war
+  zip-file: target/BridgeWorkerPlatform-1.0.war
   on:
     all_branches: true
