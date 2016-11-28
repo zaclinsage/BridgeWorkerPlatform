@@ -6,6 +6,7 @@ import org.sagebionetworks.bridge.reporter.request.ReportScheduleName;
 import org.sagebionetworks.bridge.reporter.worker.BridgeReporterProcessor;
 import org.sagebionetworks.bridge.sqs.PollSqsWorkerBadRequestException;
 import org.sagebionetworks.bridge.udd.worker.BridgeUddProcessor;
+import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
@@ -19,9 +20,6 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
 public class BridgeWorkerPlatformSqsCallbackTest {
-    public BridgeWorkerPlatformSqsCallbackTest() throws IOException {
-    }
-
     private static final BridgeWorkerPlatformRequest MOCK_WORKER_REQUEST = mock(BridgeWorkerPlatformRequest.class);
     private static final BridgeReporterProcessor MOCK_REPORTER_PROCESSOR = mock(BridgeReporterProcessor.class);
     private static final BridgeUddProcessor MOCK_UDD_PROCESSOR = mock(BridgeUddProcessor.class);
@@ -80,21 +78,25 @@ public class BridgeWorkerPlatformSqsCallbackTest {
             "   \"endDate\":\"2015-03-31\"\n" +
             "}";
 
-    private final JsonNode REPORTER_REQUEST_JSON = DefaultObjectMapper.INSTANCE.readValue(REPORTER_REQUEST, JsonNode.class);
-    private final JsonNode EXPORTER_REQUEST_JSON = DefaultObjectMapper.INSTANCE.readValue(EXPORTER_REQUEST, JsonNode.class);
-    private final JsonNode UDD_REQUEST_JSON = DefaultObjectMapper.INSTANCE.readValue(UDD_REQUEST, JsonNode.class);
-
-
+    private JsonNode reporterRequestJson;
+    private JsonNode exporterRequestJson;
+    private JsonNode uddRequestJson;
 
     // test members
     private BridgeWorkerPlatformSqsCallback callback;
+
+    @BeforeClass
+    public void generalSetup() throws IOException {
+        reporterRequestJson = DefaultObjectMapper.INSTANCE.readValue(REPORTER_REQUEST, JsonNode.class);
+        exporterRequestJson = DefaultObjectMapper.INSTANCE.readValue(EXPORTER_REQUEST, JsonNode.class);
+        uddRequestJson = DefaultObjectMapper.INSTANCE.readValue(UDD_REQUEST, JsonNode.class);
+    }
 
     @BeforeMethod
     public void setup() throws Exception {
         // set up callback
         callback = new BridgeWorkerPlatformSqsCallback();
         callback.setBridgeReporterProcessor(MOCK_REPORTER_PROCESSOR);
-//        callback.setBridgeExporterProcessor(MOCK_EXPORTER_PROCESSOR);
         callback.setBridgeUddProcessor(MOCK_UDD_PROCESSOR);
         callback.setExecutor(executor);
     }
@@ -103,14 +105,14 @@ public class BridgeWorkerPlatformSqsCallbackTest {
     public void testBridgeReporter() throws Exception {
         callback.callback(REQUEST_JSON_MSG);
         TimeUnit.SECONDS.sleep(1);
-        verify(MOCK_REPORTER_PROCESSOR).process(eq(REPORTER_REQUEST_JSON));
+        verify(MOCK_REPORTER_PROCESSOR).process(eq(reporterRequestJson));
     }
 
     @Test
     public void testBridgeUdd() throws Exception {
         callback.callback(REQUEST_JSON_UDD_MSG);
         TimeUnit.SECONDS.sleep(1);
-        verify(MOCK_UDD_PROCESSOR).process(eq(UDD_REQUEST_JSON));
+        verify(MOCK_UDD_PROCESSOR).process(eq(uddRequestJson));
     }
 
     @Test(expectedExceptions = PollSqsWorkerBadRequestException.class)

@@ -5,11 +5,8 @@ import org.sagebionetworks.bridge.sqs.PollSqsWorker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
-
-import java.util.List;
 
 /**
  * Launches worker threads. This hooks into the Spring Boot command-line runner, which is really just a big

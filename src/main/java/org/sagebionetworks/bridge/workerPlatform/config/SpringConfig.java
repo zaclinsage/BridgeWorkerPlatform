@@ -1,8 +1,11 @@
 package org.sagebionetworks.bridge.workerPlatform.config;
 
+import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClient;
+import com.amazonaws.services.dynamodbv2.document.DynamoDB;
 import com.amazonaws.services.sqs.AmazonSQSClient;
 import org.sagebionetworks.bridge.config.Config;
 import org.sagebionetworks.bridge.config.PropertiesConfig;
+import org.sagebionetworks.bridge.file.FileHelper;
 import org.sagebionetworks.bridge.heartbeat.HeartbeatLogger;
 import org.sagebionetworks.bridge.sdk.ClientInfo;
 import org.sagebionetworks.bridge.sdk.ClientProvider;
@@ -10,21 +13,18 @@ import org.sagebionetworks.bridge.sdk.models.accounts.SignInCredentials;
 import org.sagebionetworks.bridge.sqs.PollSqsWorker;
 import org.sagebionetworks.bridge.sqs.SqsHelper;
 import org.sagebionetworks.bridge.workerPlatform.multiplexer.BridgeWorkerPlatformSqsCallback;
+import org.sagebionetworks.client.SynapseAdminClientImpl;
+import org.sagebionetworks.client.SynapseClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.core.io.Resource;
-import org.springframework.core.io.support.PropertiesLoaderUtils;
 
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Properties;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -48,7 +48,7 @@ public class SpringConfig {
         ClientProvider.setClientInfo(clientInfo);
     }
 
-    @Bean
+    @Bean(name = "workerPlatformConfigProperties")
     public Config bridgeConfig() {
         String defaultConfig = getClass().getClassLoader().getResource(DEFAULT_CONFIG_FILE).getPath();
         Path defaultConfigPath = Paths.get(defaultConfig);
@@ -72,6 +72,16 @@ public class SpringConfig {
         String email = config.get("bridge.worker.email");
         String password = config.get("bridge.worker.password");
         return new SignInCredentials(study, email, password);
+    }
+
+    @Bean
+    public DynamoDB ddbClient() {
+        return new DynamoDB(new AmazonDynamoDBClient());
+    }
+
+    @Bean
+    public FileHelper fileHelper() {
+        return new FileHelper();
     }
 
     @Bean
@@ -104,5 +114,13 @@ public class SpringConfig {
     @Bean(name = "platformExecutorService")
     public ExecutorService platformExecutorService() {
         return Executors.newFixedThreadPool(bridgeConfig().getInt("threadpool.worker.count"));
+    }
+
+    @Bean(name="workerPlatformSynapseClient")
+    public SynapseClient synapseClient() throws IOException {
+        SynapseClient synapseClient = new SynapseAdminClientImpl();
+        synapseClient.setUserName(bridgeConfig().get("synapse.user"));
+        synapseClient.setApiKey(bridgeConfig().get("synapse.api.key"));
+        return synapseClient;
     }
 }
