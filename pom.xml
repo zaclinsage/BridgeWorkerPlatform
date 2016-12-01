@@ -54,7 +54,7 @@
         <dependency>
             <groupId>org.sagebionetworks</groupId>
             <artifactId>BridgeUserDataDownloadService</artifactId>
-            <version>1.0</version>
+            <version>1.0.1</version>
         </dependency>
         <dependency>
             <groupId>org.sagebionetworks</groupId>
@@ -236,20 +236,5 @@
                 <artifactId>spring-boot-maven-plugin</artifactId>
             </plugin>
         </plugins>
-        <extensions>
-            <extension>
-                <groupId>org.springframework.build</groupId>
-                <artifactId>aws-maven</artifactId>
-                <version>5.0.0.RELEASE</version>
-            </extension>
-        </extensions>
     </build>
-
-    <distributionManagement>
-        <repository>
-            <id>org-sagebridge-repo-maven-releases</id>
-            <name>org-sagebridge-repo-maven-releases</name>
-            <url>s3://org-sagebridge-repo-maven-releases</url>
-        </repository>
-    </distributionManagement>
 </project>
