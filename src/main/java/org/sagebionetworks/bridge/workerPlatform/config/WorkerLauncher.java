@@ -40,6 +40,7 @@ public class WorkerLauncher implements CommandLineRunner {
         LOG.info("Worker Platform Starting heartbeat...");
         new Thread(heartbeatLogger).start();
 
+        // TODO: make this multi-threaded
         LOG.info("Worker Platform Starting poll SQS worker...");
         new Thread(pollSqsWorkers).start();
     }
