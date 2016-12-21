@@ -7,9 +7,6 @@ import org.sagebionetworks.bridge.config.Config;
 import org.sagebionetworks.bridge.config.PropertiesConfig;
 import org.sagebionetworks.bridge.file.FileHelper;
 import org.sagebionetworks.bridge.heartbeat.HeartbeatLogger;
-import org.sagebionetworks.bridge.sdk.ClientInfo;
-import org.sagebionetworks.bridge.sdk.ClientProvider;
-import org.sagebionetworks.bridge.sdk.models.accounts.SignInCredentials;
 import org.sagebionetworks.bridge.sqs.PollSqsWorker;
 import org.sagebionetworks.bridge.sqs.SqsHelper;
 import org.sagebionetworks.bridge.workerPlatform.multiplexer.BridgeWorkerPlatformSqsCallback;
@@ -25,8 +22,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 // These configs get credentials from the default credential chain. For developer desktops, this is ~/.aws/credentials.
 // For EC2 instances, this happens transparently.
@@ -40,13 +35,6 @@ public class SpringConfig {
     private static final String CONFIG_FILE = "BridgeWorkerPlatform.conf";
     private static final String DEFAULT_CONFIG_FILE = CONFIG_FILE;
     private static final String USER_CONFIG_FILE = System.getProperty("user.home") + "/" + CONFIG_FILE;
-
-    // ClientProvider needs to be statically configured.
-    static {
-        // set client info
-        ClientInfo clientInfo = new ClientInfo.Builder().withAppName("BridgeWorkerPlatform").withAppVersion(1).build();
-        ClientProvider.setClientInfo(clientInfo);
-    }
 
     @Bean(name = "workerPlatformConfigProperties")
     public Config bridgeConfig() {
@@ -63,15 +51,6 @@ public class SpringConfig {
         } catch (IOException ex) {
             throw new RuntimeException(ex);
         }
-    }
-
-    @Bean
-    public SignInCredentials bridgeWorkerCredentials() {
-        Config config = bridgeConfig();
-        String study = config.get("bridge.worker.study");
-        String email = config.get("bridge.worker.email");
-        String password = config.get("bridge.worker.password");
-        return new SignInCredentials(study, email, password);
     }
 
     @Bean
@@ -109,11 +88,6 @@ public class SpringConfig {
         sqsWorker.setSleepTimeMillis(config.getInt("workerPlatform.request.sqs.sleep.time.millis"));
         sqsWorker.setSqsHelper(sqsHelper());
         return sqsWorker;
-    }
-
-    @Bean(name = "platformExecutorService")
-    public ExecutorService platformExecutorService() {
-        return Executors.newFixedThreadPool(bridgeConfig().getInt("threadpool.worker.count"));
     }
 
     @Bean(name="workerPlatformSynapseClient")

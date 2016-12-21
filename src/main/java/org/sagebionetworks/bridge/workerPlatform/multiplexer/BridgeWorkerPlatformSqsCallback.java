@@ -12,9 +12,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.Resource;
 import java.io.IOException;
-import java.util.concurrent.ExecutorService;
 
 /**
  * SQS callback. Called by the PollSqsWorker. This handles a reporting request.
@@ -23,16 +21,8 @@ import java.util.concurrent.ExecutorService;
 public class BridgeWorkerPlatformSqsCallback implements PollSqsCallback {
     private static final Logger LOG = LoggerFactory.getLogger(BridgeWorkerPlatformSqsCallback.class);
 
-    private ExecutorService executor;
-
     private BridgeReporterProcessor bridgeReporterProcessor;
     private BridgeUddProcessor bridgeUddProcessor;
-
-    /** Executor that runs our export workers. */
-    @Resource(name = "platformExecutorService")
-    public final void setExecutor(ExecutorService executor) {
-        this.executor = executor;
-    }
 
     @Autowired
     public final void setBridgeReporterProcessor(BridgeReporterProcessor bridgeReporterProcessor) {
@@ -57,21 +47,14 @@ public class BridgeWorkerPlatformSqsCallback implements PollSqsCallback {
         ServiceType service = request.getService();
         JsonNode body = request.getBody();
 
-        LOG.info("Received request for hash[service]=" + service.name());
+        LOG.info("Received request for service=" + service.name());
 
-        executor.execute(() -> {
-            // main block to assign thread to service processor
-            try {
-                if (service == ServiceType.REPORTER) {
-                    bridgeReporterProcessor.process(body);
-                } else if (service == ServiceType.EXPORTER) {
-                    // TODO: left exporter for later testing
-                } else if (service == ServiceType.UDD) {
-                    bridgeUddProcessor.process(body);
-                }
-            } catch (Throwable e) {
-                LOG.error("Thread Error Occurs: ", e);
-            }
-        });
+        if (service == ServiceType.REPORTER) {
+            bridgeReporterProcessor.process(body);
+        } else if (service == ServiceType.EXPORTER) {
+            // TODO: left exporter for later testing
+        } else if (service == ServiceType.UDD) {
+            bridgeUddProcessor.process(body);
+        }
     }
 }
